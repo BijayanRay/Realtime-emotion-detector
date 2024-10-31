@@ -14,4 +14,4 @@ To train the model manually and use that:
 - Download the model and save it in the same directory as the ``app.py`` file. 
 - Execute ``python app.py``.
 
-The ChatGPT (free version) hsa been used in developing the project and PyTorch libraries have been used in building and training the neural network. 
+The ChatGPT (free version) has been used in developing the project and PyTorch libraries have been used in building and training the neural network. 
