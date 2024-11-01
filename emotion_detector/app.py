@@ -4,10 +4,7 @@ import torch.nn as nn
 import numpy as np
 from torchvision import transforms
 from PIL import Image
-from flask import Flask, render_template, Response
-
-# Initialize Flask app with custom template folder
-app = Flask(__name__, template_folder='www')
+import streamlit as st
 
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -54,20 +51,23 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))  # Normalize for grayscale
 ])
 
-def generate_frames():
-    # Initialize webcam
-    cap = cv2.VideoCapture(0)
+# Streamlit app setup
+st.title("Real-Time Emotion Detection")
+st.write("This application captures webcam feed and detects emotions in real-time.")
 
-    if not cap.isOpened():
-        raise Exception("Error: Could not open webcam.")
+# Start webcam capture
+cap = cv2.VideoCapture(0)
 
-    # Define the custom boundary string
-    boundary = b'--myboundary\r\n'
+if not cap.isOpened():
+    st.error("Error: Could not open webcam.")
+else:
+    # Display the webcam feed and predicted emotion
+    frame_placeholder = st.empty()
 
     while True:
-        # Capture frame-by-frame
         ret, frame = cap.read()
         if not ret:
+            st.error("Failed to capture image.")
             break
 
         # Convert the frame to grayscale and apply transformations
@@ -82,30 +82,10 @@ def generate_frames():
             emotion = emotion_labels[predicted.item()]
 
         # Display the resulting frame with the predicted emotion
-        cv2.putText(frame, emotion, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.putText(frame, f"Emotion: {emotion}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
 
-        # Encode the frame in JPEG format
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
+        # Display the frame in Streamlit
+        frame_placeholder.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels="RGB")
 
-        # Create the response header using the custom boundary
-        header = (
-            boundary +
-            b'Content-Type: image/jpeg\r\n'
-            b'\r\n'
-        )
-
-        # Yield the combined header and frame for streaming
-        yield header + frame + b'\r\n'
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(),
-                    mimetype='multipart/x-mixed-replace; boundary=myboundary')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# Release the capture when exiting
+cap.release()
