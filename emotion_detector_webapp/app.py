@@ -59,7 +59,7 @@ if "run" not in st.session_state:
 if st.button("Start" if not st.session_state.run else "Stop"):
     st.session_state.run = not st.session_state.run
 
-# Real-time processing logic
+# processing logic
 if st.session_state.run:
     # Capture webcam input using Streamlit's camera input
     img_input = st.camera_input("Webcam feed")
@@ -78,4 +78,4 @@ if st.session_state.run:
         # Display the predicted emotion
         st.markdown(f"**Predicted Emotion: {emotion}**")
 else:
-    st.write("Click 'Start' to begin real-time detection.")
+    st.write("Click 'Start' to begin emotion detection.")
