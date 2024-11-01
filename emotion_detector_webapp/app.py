@@ -3,7 +3,6 @@ import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
 import streamlit as st
-import time
 
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,7 +22,6 @@ class CNN(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.fc1 = nn.Linear(128 * (img_height // 8) * (img_width // 8), 128)
         self.fc2 = nn.Linear(128, num_classes)
-        self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))
@@ -31,7 +29,6 @@ class CNN(nn.Module):
         x = self.pool(torch.relu(self.conv3(x)))
         x = x.view(-1, 128 * (img_height // 8) * (img_width // 8))
         x = torch.relu(self.fc1(x))
-        x = self.dropout(x)
         x = self.fc2(x)
         return x
 
@@ -79,8 +76,7 @@ if st.session_state.run:
             _, predicted = torch.max(output, 1)
             emotion = emotion_labels[predicted.item()]
 
-        # Display the predicted emotion as text only
+        # Display the predicted emotion
         st.markdown(f"**Predicted Emotion: {emotion}**")
-        time.sleep(0.1)  # Small delay to prevent excessive updates
 else:
     st.write("Click 'Start' to begin real-time detection.")
