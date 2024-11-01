@@ -56,8 +56,8 @@ transform = transforms.Compose([
 st.title("Real-Time Emotion Detection")
 run = st.checkbox("Run Real-Time Detection")
 
-# Real-time processing loop
-while run:
+# Real-time processing logic
+if run:
     # Capture webcam input using Streamlit's camera input
     img_input = st.camera_input("Webcam feed")
 
@@ -76,5 +76,5 @@ while run:
         st.image(img, caption=f"Predicted Emotion: {emotion}", use_column_width=True)
         time.sleep(0.1)  # Small delay to simulate real-time processing
 
-    else:
-        st.write("Waiting for webcam input...")
+else:
+    st.write("Click the checkbox above to start real-time detection.")
