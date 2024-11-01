@@ -56,11 +56,9 @@ if "run" not in st.session_state:
     st.session_state.run = False
 
 # Toggle button for running the detection
-if st.button("Start" if not st.session_state.run else "Stop"):
+if st.button("Start/Stop"):
     st.session_state.run = not st.session_state.run
-
-# processing logic
-if st.session_state.run:
+    
     # Capture webcam input using Streamlit's camera input
     img_input = st.camera_input("Webcam feed")
 
