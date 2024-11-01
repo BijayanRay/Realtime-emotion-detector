@@ -55,21 +55,20 @@ st.title("Emotion Detection")
 if "run" not in st.session_state:
     st.session_state.run = False
 
-# Toggle button for running the webcam
-if st.button("Start Webcam" if not st.session_state.run else "Stop Webcam"):
+# Toggle button for running the detection
+if st.button("Start" if not st.session_state.run else "Stop"):
     st.session_state.run = not st.session_state.run
 
-# Display the webcam feed continuously if it's running
-img_input = st.camera_input("Webcam feed", disabled=not st.session_state.run)
+# processing logic
+if st.session_state.run:
+    # Capture webcam input using Streamlit's camera input
+    img_input = st.camera_input("Webcam feed")
 
-# Check if the user has captured an image
-if img_input and st.session_state.run:
-    # Convert the captured image to grayscale
-    img = Image.open(img_input).convert('L')  # Convert to grayscale
-    image = transform(img).unsqueeze(0).to(device)
+    if img_input:
+        # Convert the captured image to grayscale
+        img = Image.open(img_input).convert('L')  # Convert to grayscale
+        image = transform(img).unsqueeze(0).to(device)
 
-    # Button to capture image and perform inference
-    if st.button("Capture Image"):
         # Perform inference
         with torch.no_grad():
             output = model(image)
@@ -79,7 +78,4 @@ if img_input and st.session_state.run:
         # Display the predicted emotion
         st.markdown(f"**Predicted Emotion: {emotion}**")
 else:
-    if not st.session_state.run:
-        st.write("Click 'Start Webcam' to begin.")
-    else:
-        st.write("Please allow camera access to detect emotions.")
+    st.write("Click 'Start' to begin emotion detection.")
