@@ -79,8 +79,8 @@ if st.session_state.run:
             _, predicted = torch.max(output, 1)
             emotion = emotion_labels[predicted.item()]
 
-        # Display the resulting image with the predicted emotion
-        st.image(img, caption=f"Predicted Emotion: {emotion}", use_column_width=True)
+        # Display the predicted emotion as text only
+        st.markdown(f"**Predicted Emotion: {emotion}**")
         time.sleep(0.1)  # Small delay to prevent excessive updates
 else:
     st.write("Click 'Start' to begin real-time detection.")
