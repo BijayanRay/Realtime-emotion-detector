@@ -56,7 +56,7 @@ transform = transforms.Compose([
 st.title("Real-Time Emotion Detection")
 run = st.checkbox("Run Real-Time Detection")
 
-# Real-time processing logic
+# Continuous processing with rerun
 if run:
     # Capture webcam input using Streamlit's camera input
     img_input = st.camera_input("Webcam feed")
@@ -74,7 +74,10 @@ if run:
 
         # Display the resulting image with the predicted emotion
         st.image(img, caption=f"Predicted Emotion: {emotion}", use_column_width=True)
-        time.sleep(0.1)  # Small delay to simulate real-time processing
+        
+        # Simulate continuous refresh to mimic real-time processing
+        time.sleep(0.1)
+        st.experimental_rerun()  # Refresh the app to update the image and emotion
 
 else:
     st.write("Click the checkbox above to start real-time detection.")
