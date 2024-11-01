@@ -1,3 +1,4 @@
+import cv2
 import torch
 import torch.nn as nn
 import numpy as np
@@ -37,7 +38,7 @@ class CNN(nn.Module):
 
 # Load the trained model
 model = CNN().to(device)
-model.load_state_dict(torch.load('emotion_recognition_model.pth', map_location=device))
+model.load_state_dict(torch.load('emotion_detector_webapp/emotion_recognition_model.pth', map_location=device))
 model.eval()
 
 # Emotion labels
@@ -51,20 +52,38 @@ transform = transforms.Compose([
 ])
 
 st.title("Real-Time Emotion Detection")
+run = st.checkbox('Run the webcam')
 
-# Capture webcam input using Streamlit's camera input
-img_input = st.camera_input("Take a picture")
+if run:
+    # Initialize webcam
+    cap = cv2.VideoCapture(0)
 
-if img_input:
-    # Convert the captured image to grayscale
-    img = Image.open(img_input).convert('L')  # Convert to grayscale
-    image = transform(img).unsqueeze(0).to(device)
+    if not cap.isOpened():
+        st.error("Error: Could not open webcam.")
+    else:
+        frame_window = st.image([])  # Placeholder for the image
 
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        _, predicted = torch.max(output, 1)
-        emotion = emotion_labels[predicted.item()]
+    while run:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-    # Display the resulting image with the predicted emotion
-    st.image(img, caption=f"Predicted Emotion: {emotion}", use_column_width=True)
+        # Convert the frame to grayscale and apply transformations
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        image = Image.fromarray(gray_frame)
+        image = transform(image).unsqueeze(0).to(device)
+
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            _, predicted = torch.max(output, 1)
+            emotion = emotion_labels[predicted.item()]
+
+        # Display the resulting frame with the predicted emotion
+        cv2.putText(frame, emotion, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+
+        # Update the image in Streamlit
+        frame_window.image(frame, channels='BGR')
+
+    cap.release()
+
