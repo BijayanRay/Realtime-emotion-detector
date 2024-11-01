@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
-import numpy as np
 from torchvision import transforms
 from PIL import Image
 import streamlit as st
+import time
 
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -37,8 +37,11 @@ class CNN(nn.Module):
 
 # Load the trained model
 model = CNN().to(device)
-model.load_state_dict(torch.load('emotion_recognition_model.pth', map_location=device))
-model.eval()
+try:
+    model.load_state_dict(torch.load('emotion_detector_webapp/emotion_recognition_model.pth', map_location=device))
+    model.eval()
+except Exception as e:
+    st.error(f"Error loading model: {e}")
 
 # Emotion labels
 emotion_labels = ['angry', 'disgusted', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
@@ -51,20 +54,27 @@ transform = transforms.Compose([
 ])
 
 st.title("Real-Time Emotion Detection")
+run = st.checkbox("Run Real-Time Detection")
 
-# Capture webcam input using Streamlit's camera input
-img_input = st.camera_input("Take a picture")
+# Real-time processing loop
+while run:
+    # Capture webcam input using Streamlit's camera input
+    img_input = st.camera_input("Webcam feed")
 
-if img_input:
-    # Convert the captured image to grayscale
-    img = Image.open(img_input).convert('L')  # Convert to grayscale
-    image = transform(img).unsqueeze(0).to(device)
+    if img_input:
+        # Convert the captured image to grayscale
+        img = Image.open(img_input).convert('L')  # Convert to grayscale
+        image = transform(img).unsqueeze(0).to(device)
 
-    # Perform inference
-    with torch.no_grad():
-        output = model(image)
-        _, predicted = torch.max(output, 1)
-        emotion = emotion_labels[predicted.item()]
+        # Perform inference
+        with torch.no_grad():
+            output = model(image)
+            _, predicted = torch.max(output, 1)
+            emotion = emotion_labels[predicted.item()]
 
-    # Display the resulting image with the predicted emotion
-    st.image(img, caption=f"Predicted Emotion: {emotion}", use_column_width=True)
+        # Display the resulting image with the predicted emotion
+        st.image(img, caption=f"Predicted Emotion: {emotion}", use_column_width=True)
+        time.sleep(0.1)  # Small delay to simulate real-time processing
+
+    else:
+        st.write("Waiting for webcam input...")
