@@ -83,4 +83,4 @@ if st.session_state.run:
 else:
     st.write("Click 'Start' to begin emotion detection.")
 
-st.markdown("Here is the GitHub repository [link](https://realtime-emotion-detector.streamlit.app/) to this project")
+st.markdown("Here is the GitHub repository [link](https://github.com/BijayanRay/realtime-emotion-detector/blob/main/emotion_detector_webapp/app.py) to this project.")
