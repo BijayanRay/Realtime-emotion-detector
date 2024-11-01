@@ -6,7 +6,6 @@ import streamlit as st
 
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-st.write(f"Using device: {device}")
 
 # Define constants
 img_height, img_width = 48, 48
