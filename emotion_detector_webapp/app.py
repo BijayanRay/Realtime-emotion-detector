@@ -38,7 +38,7 @@ class CNN(nn.Module):
 # Load the trained model
 model = CNN().to(device)
 try:
-    model.load_state_dict(torch.load('emotion_detector_webapp/emotion_recognition_model.pth', map_location=device))
+    model.load_state_dict(torch.load('src/emotion_recognition_model.pth', map_location=device))
     model.eval()
 except Exception as e:
     st.error(f"Error loading model: {e}")
