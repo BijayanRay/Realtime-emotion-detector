@@ -59,8 +59,6 @@ if "run" not in st.session_state:
 if st.button("Start" if st.session_state.run else "Stop"):
     st.session_state.run = not st.session_state.run
 
-# processing logic
-if st.session_state.run:
     # Capture webcam input continuously
     img_input = st.camera_input("Webcam feed", key="camera")
 
