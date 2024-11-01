@@ -52,8 +52,8 @@ transform = transforms.Compose([
 st.title("Emotion Detection")
 
 # Initialize session state for tracking
-# if "run" not in st.session_state:
-st.session_state.run = False
+if "run" not in st.session_state:
+    st.session_state.run = False
 
 # Toggle button for running the detection
 if st.button("Start" if not st.session_state.run else "Stop"):
