@@ -55,9 +55,12 @@ st.title("Emotion Detection")
 if "run" not in st.session_state:
     st.session_state.run = False
 
-# Toggle button for running the detection
-if st.button("Start" if not st.session_state.run else "Stop"):
+# Function to toggle detection state
+def toggle_detection():
     st.session_state.run = not st.session_state.run
+
+# Toggle button for running the detection
+st.button("Start" if not st.session_state.run else "Stop", on_click=toggle_detection)
 
 # processing logic
 if st.session_state.run:
