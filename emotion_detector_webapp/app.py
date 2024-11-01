@@ -43,7 +43,7 @@ class CNN(nn.Module):
 
 # Load the trained model once when the app starts
 model = CNN().to(device)
-model.load_state_dict(torch.load('src/emotion_recognition_model.pth', map_location=device))
+model.load_state_dict(torch.load('emotion_detector_webapp/emotion_recognition_model.pth', map_location=device))
 model.eval()
 
 # Emotion labels
