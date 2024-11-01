@@ -51,13 +51,8 @@ transform = transforms.Compose([
 
 st.title("Emotion Detection")
 
-# Initialize session state for tracking
-if "run" not in st.session_state:
-    st.session_state.run = False
-
 # Toggle button for running the detection
-if st.button("Start" if st.session_state.run else "Stop"):
-    st.session_state.run = not st.session_state.run
+if st.button("Start/Stop"):
 
     # Capture webcam input continuously
     img_input = st.camera_input("Webcam feed", key="camera")
