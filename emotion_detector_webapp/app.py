@@ -49,7 +49,7 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))  # Normalize for grayscale
 ])
 
-st.title("Real-Time Emotion Detection")
+st.title("Emotion Detection")
 
 # Initialize session state for tracking
 if "run" not in st.session_state:
