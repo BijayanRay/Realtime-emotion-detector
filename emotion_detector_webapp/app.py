@@ -55,13 +55,14 @@ st.title("Emotion Detection")
 if "run" not in st.session_state:
     st.session_state.run = False
 
-# Toggle button for running the detection
+# Toggle button for running the webcam
 if st.button("Start Webcam" if not st.session_state.run else "Stop Webcam"):
     st.session_state.run = not st.session_state.run
 
 # Display the webcam feed continuously if it's running
 img_input = st.camera_input("Webcam feed", disabled=not st.session_state.run)
 
+# Check if the user has captured an image
 if img_input and st.session_state.run:
     # Convert the captured image to grayscale
     img = Image.open(img_input).convert('L')  # Convert to grayscale
