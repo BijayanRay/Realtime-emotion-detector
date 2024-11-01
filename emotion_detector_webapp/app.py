@@ -1,10 +1,9 @@
-import cv2
 import torch
 import torch.nn as nn
-import numpy as np
 from torchvision import transforms
 from PIL import Image
 import streamlit as st
+import time
 
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,8 +37,11 @@ class CNN(nn.Module):
 
 # Load the trained model
 model = CNN().to(device)
-model.load_state_dict(torch.load('emotion_recognition_model.pth', map_location=device))
-model.eval()
+try:
+    model.load_state_dict(torch.load('emotion_detector_webapp/emotion_recognition_model.pth', map_location=device))
+    model.eval()
+except Exception as e:
+    st.error(f"Error loading model: {e}")
 
 # Emotion labels
 emotion_labels = ['angry', 'disgusted', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
@@ -52,26 +54,24 @@ transform = transforms.Compose([
 ])
 
 st.title("Real-Time Emotion Detection")
-run = st.checkbox('Run the webcam')
 
-if run:
-    # Initialize webcam
-    cap = cv2.VideoCapture(0)
+# Initialize session state for tracking
+if "run" not in st.session_state:
+    st.session_state.run = False
 
-    if not cap.isOpened():
-        st.error("Error: Could not open webcam.")
-    else:
-        frame_window = st.image([])  # Placeholder for the image
+# Toggle button for running the detection
+if st.button("Start" if not st.session_state.run else "Stop"):
+    st.session_state.run = not st.session_state.run
 
-    while run:
-        ret, frame = cap.read()
-        if not ret:
-            break
+# Real-time processing logic
+if st.session_state.run:
+    # Capture webcam input using Streamlit's camera input
+    img_input = st.camera_input("Webcam feed")
 
-        # Convert the frame to grayscale and apply transformations
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        image = Image.fromarray(gray_frame)
-        image = transform(image).unsqueeze(0).to(device)
+    if img_input:
+        # Convert the captured image to grayscale
+        img = Image.open(img_input).convert('L')  # Convert to grayscale
+        image = transform(img).unsqueeze(0).to(device)
 
         # Perform inference
         with torch.no_grad():
@@ -79,11 +79,8 @@ if run:
             _, predicted = torch.max(output, 1)
             emotion = emotion_labels[predicted.item()]
 
-        # Display the resulting frame with the predicted emotion
-        cv2.putText(frame, emotion, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-
-        # Update the image in Streamlit
-        frame_window.image(frame, channels='BGR')
-
-    cap.release()
-
+        # Display the resulting image with the predicted emotion
+        st.image(img, caption=f"Predicted Emotion: {emotion}", use_column_width=True)
+        time.sleep(0.1)  # Small delay to prevent excessive updates
+else:
+    st.write("Click 'Start' to begin real-time detection.")
