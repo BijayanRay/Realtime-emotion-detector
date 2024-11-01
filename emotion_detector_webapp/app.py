@@ -82,3 +82,5 @@ if st.session_state.run:
         st.markdown(f"**Predicted Emotion: {emotion}**")
 else:
     st.write("Click 'Start' to begin emotion detection.")
+
+st.markdown("Here is the GitHub repository [link](https://realtime-emotion-detector.streamlit.app/) to this project")
