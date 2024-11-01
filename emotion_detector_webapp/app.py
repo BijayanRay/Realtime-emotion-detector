@@ -61,8 +61,8 @@ if st.button("Start" if not st.session_state.run else "Stop"):
 
 # processing logic
 if st.session_state.run:
-    # Capture webcam input using Streamlit's camera input
-    img_input = st.camera_input("Webcam feed")
+    # Capture webcam input continuously
+    img_input = st.camera_input("Webcam feed", key="camera")
 
     if img_input:
         # Convert the captured image to grayscale
