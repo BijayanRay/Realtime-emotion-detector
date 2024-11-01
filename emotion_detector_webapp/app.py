@@ -56,9 +56,8 @@ if "run" not in st.session_state:
     st.session_state.run = False
 
 # Toggle button for running the detection
-if st.button("Start" if not st.session_state.run else "Stop"):
+if st.button("Start" if st.session_state.run else "Stop"):
     st.session_state.run = not st.session_state.run
-    st.button("Start" if not st.session_state.run else "Stop")
 
 # processing logic
 if st.session_state.run:
