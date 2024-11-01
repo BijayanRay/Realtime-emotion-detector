@@ -51,11 +51,18 @@ transform = transforms.Compose([
 
 st.title("Emotion Detection")
 
-# Toggle button for running the detection
-if st.button("Start/Stop"):
+# Initialize session state for tracking
+if "run" not in st.session_state:
+    st.session_state.run = False
 
-    # Capture webcam input continuously
-    img_input = st.camera_input("Webcam feed", key="camera")
+# Toggle button for running the detection
+if st.button("Start" if not st.session_state.run else "Stop"):
+    st.session_state.run = not st.session_state.run
+
+# processing logic
+if st.session_state.run:
+    # Capture webcam input using Streamlit's camera input
+    img_input = st.camera_input("Webcam feed")
 
     if img_input:
         # Convert the captured image to grayscale
