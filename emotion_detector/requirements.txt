@@ -1,6 +1,1 @@
-opencv-python>=4.0
-torch>=1.0
-torchvision>=0.5
-numpy>=1.18
-pillow>=8.0
-flask>=2.0
+opencv-python==4.8.0.76
