@@ -51,32 +51,21 @@ transform = transforms.Compose([
 
 st.title("Emotion Detection")
 
-# Initialize session state for tracking
-if "run" not in st.session_state:
-    st.session_state.run = False
+# Display the webcam feed continuously
+img_input = st.camera_input("Webcam feed")
 
-# Toggle button for running the detection
-start_stop_button = st.button("Start" if not st.session_state.run else "Stop")
-if start_stop_button:
-    st.session_state.run = not st.session_state.run
+if img_input:
+    # Convert the captured image to grayscale
+    img = Image.open(img_input).convert('L')  # Convert to grayscale
+    image = transform(img).unsqueeze(0).to(device)
 
-# processing logic
-if st.session_state.run:
-    # Capture webcam input using Streamlit's camera input
-    img_input = st.camera_input("Webcam feed")
+    # Perform inference
+    with torch.no_grad():
+        output = model(image)
+        _, predicted = torch.max(output, 1)
+        emotion = emotion_labels[predicted.item()]
 
-    if img_input:
-        # Convert the captured image to grayscale
-        img = Image.open(img_input).convert('L')  # Convert to grayscale
-        image = transform(img).unsqueeze(0).to(device)
-
-        # Perform inference
-        with torch.no_grad():
-            output = model(image)
-            _, predicted = torch.max(output, 1)
-            emotion = emotion_labels[predicted.item()]
-
-        # Display the predicted emotion
-        st.markdown(f"**Predicted Emotion: {emotion}**")
+    # Display the predicted emotion
+    st.markdown(f"**Predicted Emotion: {emotion}**")
 else:
-    st.write("Click 'Start' to begin emotion detection.")
+    st.write("Please allow camera access to detect emotions.")
