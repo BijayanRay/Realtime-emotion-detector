@@ -6,7 +6,7 @@ import streamlit as st
 
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-st.write(f"Running on device: {device}")
+# st.write(f"Running on device: {device}")
 
 # Define constants
 img_height, img_width = 48, 48
@@ -38,7 +38,7 @@ class CNN(nn.Module):
 # Load the trained model with additional dropout
 model = CNN().to(device)
 try:
-    model.load_state_dict(torch.load('emotion_recognition_model.pth', map_location=device))
+    model.load_state_dict(torch.load('src/emotion_recognition_model.pth', map_location=device))
     model.eval()
 except Exception as e:
     st.error(f"Error loading model: {e}")
