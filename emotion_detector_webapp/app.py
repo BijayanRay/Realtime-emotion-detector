@@ -63,6 +63,9 @@ def toggle_detection():
 # Toggle button for running the detection
 st.button("Start" if not st.session_state.run else "Stop", on_click=toggle_detection)
 
+# Debug: Print the current detection state
+st.write(f"Detection state: {'Running' if st.session_state.run else 'Stopped'}")
+
 # Emotion detection logic
 def detect_emotion(image):
     # Perform inference
