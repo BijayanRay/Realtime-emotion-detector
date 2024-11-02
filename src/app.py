@@ -13,7 +13,7 @@ print(f"Using device: {device}")
 img_height, img_width = 48, 48
 num_classes = 7
 
-# Define the CNN model class
+# Define the CNN model class with matching dropout layers
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -23,15 +23,16 @@ class CNN(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.fc1 = nn.Linear(128 * (img_height // 8) * (img_width // 8), 128)
         self.fc2 = nn.Linear(128, num_classes)
-        self.dropout = nn.Dropout(0.5)
+        self.dropout = nn.Dropout(0.5)  # Adjust dropout to 0.5 as in training
 
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))
         x = self.pool(torch.relu(self.conv2(x)))
+        x = self.dropout(x)  # Apply dropout after second pooling layer
         x = self.pool(torch.relu(self.conv3(x)))
         x = x.view(-1, 128 * (img_height // 8) * (img_width // 8))
         x = torch.relu(self.fc1(x))
-        x = self.dropout(x)
+        x = self.dropout(x)  # Apply dropout before final layer
         x = self.fc2(x)
         return x
 
