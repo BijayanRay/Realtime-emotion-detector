@@ -12,7 +12,7 @@ st.write(f"Running on device: {device}")
 img_height, img_width = 48, 48
 num_classes = 7
 
-# Define the CNN model class
+# Define the CNN model with additional dropout
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -22,17 +22,20 @@ class CNN(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.fc1 = nn.Linear(128 * (img_height // 8) * (img_width // 8), 128)
         self.fc2 = nn.Linear(128, num_classes)
+        self.dropout = nn.Dropout(0.5)  # Increased dropout
 
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))
         x = self.pool(torch.relu(self.conv2(x)))
+        x = self.dropout(x)  # Dropout after second pooling
         x = self.pool(torch.relu(self.conv3(x)))
         x = x.view(-1, 128 * (img_height // 8) * (img_width // 8))
         x = torch.relu(self.fc1(x))
+        x = self.dropout(x)
         x = self.fc2(x)
         return x
 
-# Load the trained model
+# Load the trained model with additional dropout
 model = CNN().to(device)
 try:
     model.load_state_dict(torch.load('src/emotion_recognition_model.pth', map_location=device))
@@ -62,9 +65,6 @@ def toggle_detection():
 
 # Toggle button for running the detection
 st.button("Start" if not st.session_state.run else "Stop", on_click=toggle_detection)
-
-# Debug: Print the current detection state
-# st.write(f"Detection state: {'Running' if st.session_state.run else 'Stopped'}")
 
 # Emotion detection logic
 def detect_emotion(image):
