@@ -6,6 +6,7 @@ import streamlit as st
 
 # Check if GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+st.write(f"Running on device: {device}")
 
 # Define constants
 img_height, img_width = 48, 48
@@ -42,7 +43,7 @@ except Exception as e:
 # Emotion labels
 emotion_labels = ['angry', 'disgusted', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 
-# Define image transformations for webcam input
+# Define image transformations for input
 transform = transforms.Compose([
     transforms.Resize((img_height, img_width)),
     transforms.ToTensor(),
@@ -62,7 +63,14 @@ def toggle_detection():
 # Toggle button for running the detection
 st.button("Start" if not st.session_state.run else "Stop", on_click=toggle_detection)
 
-# processing logic
+# Emotion detection logic
+def detect_emotion(image):
+    # Perform inference
+    with torch.no_grad():
+        output = model(image)
+        _, predicted = torch.max(output, 1)
+        return emotion_labels[predicted.item()]
+
 if st.session_state.run:
     # Capture webcam input using Streamlit's camera input
     img_input = st.camera_input("Webcam feed")
@@ -72,15 +80,25 @@ if st.session_state.run:
         img = Image.open(img_input).convert('L')  # Convert to grayscale
         image = transform(img).unsqueeze(0).to(device)
 
-        # Perform inference
-        with torch.no_grad():
-            output = model(image)
-            _, predicted = torch.max(output, 1)
-            emotion = emotion_labels[predicted.item()]
+        # Get predicted emotion
+        emotion = detect_emotion(image)
 
         # Display the predicted emotion
         st.markdown(f"**Predicted Emotion: {emotion}**")
 else:
-    st.write("Click 'Start' to begin emotion detection.")
+    # Show file uploader for image input when webcam is off
+    img_upload = st.file_uploader("Upload an image to detect emotion", type=['jpg', 'jpeg', 'png'])
+    
+    if img_upload:
+        # Convert uploaded image to grayscale
+        img = Image.open(img_upload).convert('L')
+        image = transform(img).unsqueeze(0).to(device)
 
+        # Get predicted emotion
+        emotion = detect_emotion(image)
+
+        # Display the predicted emotion
+        st.markdown(f"**Predicted Emotion: {emotion}**")
+
+st.write("Click 'Start' to begin emotion detection via webcam or upload an image.")
 st.markdown("Here is the GitHub repository [link](https://github.com/BijayanRay/realtime-emotion-detector/blob/main/emotion_detector_webapp/app.py) to this project.")
