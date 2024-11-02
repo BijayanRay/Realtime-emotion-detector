@@ -93,8 +93,12 @@ else:
     img_upload = st.file_uploader("Upload an image to detect emotion", type=['jpg', 'jpeg', 'png'])
     
     if img_upload:
+        # Display uploaded image as a preview
+        img_preview = Image.open(img_upload)
+        st.image(img_preview, caption="Uploaded Image", use_column_width=True)
+
         # Convert uploaded image to grayscale
-        img = Image.open(img_upload).convert('L')
+        img = img_preview.convert('L')
         image = transform(img).unsqueeze(0).to(device)
 
         # Get predicted emotion
