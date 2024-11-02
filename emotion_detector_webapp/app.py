@@ -22,7 +22,7 @@ class CNN(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         self.fc1 = nn.Linear(128 * (img_height // 8) * (img_width // 8), 128)
         self.fc2 = nn.Linear(128, num_classes)
-        self.dropout = nn.Dropout(0.5)  # Increased dropout
+        self.dropout = nn.Dropout(0.5)  # Increased dropout to 0.5
 
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))
@@ -38,7 +38,7 @@ class CNN(nn.Module):
 # Load the trained model with additional dropout
 model = CNN().to(device)
 try:
-    model.load_state_dict(torch.load('src/emotion_recognition_model.pth', map_location=device))
+    model.load_state_dict(torch.load('emotion_recognition_model.pth', map_location=device))
     model.eval()
 except Exception as e:
     st.error(f"Error loading model: {e}")
