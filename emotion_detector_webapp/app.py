@@ -108,4 +108,4 @@ else:
         st.markdown(f"**Predicted Emotion: {emotion}**")
 
 st.write("Click 'Start' to begin emotion detection via webcam or upload an image.")
-st.markdown("Here is the GitHub repository [link](https://github.com/BijayanRay/realtime-emotion-detector/blob/main/emotion_detector_webapp/app.py) to this project.")
+st.markdown("Here is the GitHub repository [link](https://github.com/BijayanRay/realtime-emotion-detector) to this project.")
